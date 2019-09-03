@@ -61,18 +61,23 @@ public class MovieResource {
     }
     
     
+    
+    
+    
     @Path("/getAllMovies")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public String getAllMovies() {
         return GSON.toJson(facade.getAllMovies());
     }
-
+    
+    /*
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
     public void create(Movie entity) {
         throw new UnsupportedOperationException();
     }
+    */
     
     @GET
     @Path("/{id}")
@@ -80,4 +85,12 @@ public class MovieResource {
     public String getById(Movie entity, @PathParam("id") Long id) {
         return GSON.toJson(facade.getMovieById(id));
     }
+    
+    /*
+    @PUT
+    @Path("/{id}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    public void update(Movie entity, @PathParam("id") int id) {
+        throw new UnsupportedOperationException();
+    }*/
 }
