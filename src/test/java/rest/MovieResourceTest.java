@@ -118,7 +118,7 @@ public class MovieResourceTest {
                 .statusCode(HttpStatus.OK_200.getStatusCode())
                 .body("[0].actors", hasItem("Johnny"));
     }
-
+    @Disabled
     @Test
     public void testGetByName() throws Exception {
         given()
