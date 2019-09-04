@@ -37,6 +37,23 @@ public class MovieFacade {
         return emf.createEntityManager();
     }
 
+    public MovieDTO getMovieById(Long id) {
+        return new MovieDTO(getEntityManager().find(Movie.class, id));
+    }
+
+    public List<MovieDTO> getMovieByName(String name) {
+            return getEntityManager().createQuery("SELECT new dto.MovieDTO(mov) FROM Movie mov WHERE mov.name = :name", MovieDTO.class).setParameter("name", name).getResultList();
+        }
+        
+    public List<MovieDTO> getAllMovies() {
+        List<Movie> movies = getEntityManager().createQuery("SELECT mov FROM Movie mov").getResultList();
+        List<MovieDTO> moviesDTO = new ArrayList();
+        for (Movie m : movies) {
+            moviesDTO.add(new MovieDTO(m));
+        }
+        return moviesDTO;
+    }
+
     public Movie addMovie(Movie m) {
         EntityManager em = getEntityManager();
         em.getTransaction();
@@ -44,20 +61,6 @@ public class MovieFacade {
         em.getTransaction();
         em.close();
         return m;
-    }
-
-    
-    public MovieDTO getMovieById(Long id) {
-        return new MovieDTO(getEntityManager().find(Movie.class, id));
-    }
-
-    public List<MovieDTO> getAllMovies() {
-        List<Movie> movies = getEntityManager().createQuery("SELECT mov FROM Movie mov").getResultList();
-        List<MovieDTO> moviesDTO = new ArrayList();
-        for(Movie m : movies){
-            moviesDTO.add(new MovieDTO(m));
-        }
-        return moviesDTO;
     }
 
 }

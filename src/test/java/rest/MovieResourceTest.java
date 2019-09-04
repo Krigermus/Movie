@@ -6,6 +6,8 @@ import io.restassured.RestAssured;
 import static io.restassured.RestAssured.given;
 import io.restassured.parsing.Parser;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.UriBuilder;
@@ -13,7 +15,9 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +27,6 @@ import utils.EMF_Creator.DbSelector;
 import utils.EMF_Creator.Strategy;
 
 //Uncomment the line below, to temporarily disable this test
-@Disabled
 public class MovieResourceTest {
 
     private static final int SERVER_PORT = 7777;
@@ -40,6 +43,8 @@ public class MovieResourceTest {
         return GrizzlyHttpServerFactory.createHttpServer(BASE_URI, rc);
     }
 
+    static List<Movie> movies = new ArrayList();
+
     @BeforeAll
     public static void setUpClass() {
         emf = EMF_Creator.createEntityManagerFactory(DbSelector.TEST, Strategy.CREATE);
@@ -47,22 +52,24 @@ public class MovieResourceTest {
         //NOT Required if you use the version of EMF_Creator.createEntityManagerFactory used above        
         //System.setProperty("IS_TEST", TEST_DB);
         //We are using the database on the virtual Vagrant image, so username password are the same for all dev-databases
-        
         httpServer = startServer();
-        
+
         //Setup RestAssured
         RestAssured.baseURI = SERVER_URL;
         RestAssured.port = SERVER_PORT;
-   
+
         RestAssured.defaultParser = Parser.JSON;
+
+        movies.add(new Movie(1992, "My Little Whale", new String[]{"John", "Johnny"}));
+        movies.add(new Movie(2018, "My Little Whale 2", new String[]{"John", "Johnie"}));
     }
-    
+
     @AfterAll
-    public static void closeTestServer(){
+    public static void closeTestServer() {
         //System.in.read();
-         httpServer.shutdownNow();
+        httpServer.shutdownNow();
     }
-    
+
     // Setup the DataBase (used by the test-server and this test) in a known state BEFORE EACH TEST
     //TODO -- Make sure to change the script below to use YOUR OWN entity class
     @BeforeEach
@@ -71,39 +78,65 @@ public class MovieResourceTest {
         try {
             em.getTransaction().begin();
             em.createNamedQuery("Movie.deleteAllRows").executeUpdate();
-            em.persist(new Movie(1992, "My Little Whale", new String[]{"John","Johnny"}));
-            em.persist(new Movie(2018, "My Little Whale 2", new String[]{"John","Johnie"}));
-           
+            em.createNativeQuery("ALTER TABLE MOVIE AUTO_INCREMENT = 1").executeUpdate();
             em.getTransaction().commit();
+            
+            for(Movie mov : movies) {
+                em.getTransaction().begin();
+                em.persist(mov);
+                em.getTransaction().commit();
+            }
+            
         } finally {
             em.close();
         }
     }
-    
+
     @Test
     public void testServerIsUp() {
         System.out.println("Testing is server UP");
-        given().when().get("/xxx").then().statusCode(200);
+        given().when().get("/Movie").then().statusCode(200);
     }
-   
+
     //This test assumes the database contains two rows
     @Test
     public void testDummyMsg() throws Exception {
         given()
-        .contentType("application/json")
-        .get("/xxx/").then()
-        .assertThat()
-        .statusCode(HttpStatus.OK_200.getStatusCode())
-        .body("msg", equalTo("Hello World"));   
+                .contentType("application/json")
+                .get("/Movie/").then()
+                .assertThat()
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body("msg", equalTo("Hello World"));
     }
-    
+
+    @Test
+    public void testGetAll() throws Exception {
+        given()
+                .contentType("application/json")
+                .get("/Movie/getAllMovies").then()
+                .assertThat()
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body("[0].actors", hasItem("Johnny"));
+    }
+
+    @Test
+    public void testGetByName() throws Exception {
+        given()
+                .contentType("application/json")
+                .get("/Movie/name/My Little Whale 2").then()
+                .assertThat()
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body("[1].name", equalTo("My Little Whale 2"));
+    }
+
+    @Disabled
     @Test
     public void testCount() throws Exception {
         given()
-        .contentType("application/json")
-        .get("/xxx/count").then()
-        .assertThat()
-        .statusCode(HttpStatus.OK_200.getStatusCode())
-        .body("count", equalTo(2));   
+                .contentType("application/json")
+                .get("/xxx/count").then()
+                .assertThat()
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body("count", equalTo(2));
     }
 }
