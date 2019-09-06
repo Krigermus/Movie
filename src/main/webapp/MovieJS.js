@@ -1,7 +1,7 @@
 window.onload = function () {
 
     function getAll() {
-        let url = "http://www.melif.dk/Movie/api/Movie/getAllMovies";
+        let url = "/Movie/api/Movie/getAllMovies";
         startFetch(url, "all");
     }
 
