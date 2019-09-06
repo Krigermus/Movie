@@ -6,22 +6,22 @@ window.onload = function () {
     }
 
     function getData() {
-        let url = "http://www.melif.dk/Movie/api/Movie/databaseData";
+        let url = "Movie/api/Movie/databaseData";
         startFetch(url, "data");
     }
 
     function getCount() {
-        let url = "http://www.melif.dk/Movie/api/Movie/count";
+        let url = "Movie/api/Movie/count";
         startFetch(url, "count");
     }
 
     function getId() {
-        let url = "http://www.melif.dk/Movie/api/Movie/" + document.getElementById("idOrName").value;
+        let url = "/Movie/api/Movie/" + document.getElementById("idOrName").value;
         startFetch(url, "id");
     }
 
     function getName() {
-        let url = "http://www.melif.dk/Movie/api/Movie/name/" + document.getElementById("idOrName").value;
+        let url = "/Movie/api/Movie/name/" + document.getElementById("idOrName").value;
         startFetch(url, "name");
     }
 
