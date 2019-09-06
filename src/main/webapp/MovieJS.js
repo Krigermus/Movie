@@ -1,27 +1,27 @@
 window.onload = function () {
 
     function getAll() {
-        let url = "http://localhost:8080/Movie/api/Movie/getAllMovies";
+        let url = "http://www.melif.dk/Movie/api/Movie/getAllMovies";
         startFetch(url, "all");
     }
 
     function getData() {
-        let url = "http://localhost:8080/Movie/api/Movie/databaseData";
+        let url = "http://www.melif.dk/Movie/api/Movie/databaseData";
         startFetch(url, "data");
     }
 
     function getCount() {
-        let url = "http://localhost:8080/Movie/api/Movie/count";
+        let url = "http://www.melif.dk/Movie/api/Movie/count";
         startFetch(url, "count");
     }
 
     function getId() {
-        let url = "http://localhost:8080/Movie/api/Movie/" + document.getElementById("idOrName").value;
+        let url = "http://www.melif.dk/Movie/api/Movie/" + document.getElementById("idOrName").value;
         startFetch(url, "id");
     }
 
     function getName() {
-        let url = "http://localhost:8080/Movie/api/Movie/name/" + document.getElementById("idOrName").value;
+        let url = "http://www.melif.dk/Movie/api/Movie/name/" + document.getElementById("idOrName").value;
         startFetch(url, "name");
     }
 
