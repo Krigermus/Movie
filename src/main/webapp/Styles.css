@@ -6,3 +6,16 @@
     margin-left: 0.5rem;
     margin-top: 1rem;
 }
+
+.table {
+    margin: 1rem;
+}
+
+body {
+    width: 100%;
+    overflow-x: auto;
+}
+
+#data {
+    margin: 1rem;
+}

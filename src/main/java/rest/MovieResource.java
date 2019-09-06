@@ -57,7 +57,7 @@ public class MovieResource {
 
         em.close();
 
-        return "Data added";
+        return "{\"msg\":\"Data added\"}";
     }
 
     @Path("/getAllMovies")
