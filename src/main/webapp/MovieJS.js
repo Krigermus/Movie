@@ -6,12 +6,12 @@ window.onload = function () {
     }
 
     function getData() {
-        let url = "Movie/api/Movie/databaseData";
+        let url = "/Movie/api/Movie/databaseData";
         startFetch(url, "data");
     }
 
     function getCount() {
-        let url = "Movie/api/Movie/count";
+        let url = "/Movie/api/Movie/count";
         startFetch(url, "count");
     }
 
