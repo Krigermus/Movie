@@ -3,6 +3,7 @@ package facades;
 import dto.MovieDTO;
 import utils.EMF_Creator;
 import entities.Movie;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -27,6 +28,8 @@ public class MovieFacadeTest {
     public MovieFacadeTest() {
     }
 
+    static List<Movie> movies = new ArrayList();
+
     @BeforeAll
     public static void setUpClass() {
         emf = EMF_Creator.createEntityManagerFactory(
@@ -46,8 +49,11 @@ public class MovieFacadeTest {
      */
     @BeforeAll
     public static void setUpClassV2() {
-       emf = EMF_Creator.createEntityManagerFactory(DbSelector.TEST,Strategy.DROP_AND_CREATE);
-       facade = MovieFacade.getMovieFacade(emf);
+        emf = EMF_Creator.createEntityManagerFactory(DbSelector.TEST, Strategy.DROP_AND_CREATE);
+        facade = MovieFacade.getMovieFacade(emf);
+
+        movies.add(new Movie(1992, "My Little Whale", new String[]{"John", "Johnny"}));
+        movies.add(new Movie(2018, "My Little Whale 2", new String[]{"John", "Johnie"}));
     }
 
     @AfterAll
@@ -63,10 +69,14 @@ public class MovieFacadeTest {
         try {
             em.getTransaction().begin();
             em.createNamedQuery("Movie.deleteAllRows").executeUpdate();
-            em.persist(new Movie(1992, "My Little Whale", new String[]{"John","Johnny"}));
-            em.persist(new Movie(2018, "My Little Whale 2", new String[]{"John","Johnie"}));
-
+            em.createNativeQuery("ALTER TABLE MOVIE AUTO_INCREMENT = 1").executeUpdate();
             em.getTransaction().commit();
+
+            for (Movie mov : movies) {
+                em.getTransaction().begin();
+                em.persist(mov);
+                em.getTransaction().commit();
+            }
         } finally {
             em.close();
         }
@@ -77,36 +87,24 @@ public class MovieFacadeTest {
 //        Remove any data after each test was run
     }
 
-    
     // TODO: Delete or change this method 
     @Test
     public void testAFacadeMethod() {
         assertEquals(2, facade.getAllMovies().size(), "Expects two rows in the database");
     }
-    
-    @Disabled
-    @Test
-    public void testAddMovie() {
-        Movie result = facade.addMovie(new Movie(2020, "My Little Whale 3", new String[]{"John","Johnny"}));
-        assertNotNull(result);
-        assertEquals(3, result.getId().intValue());
-        /*
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.remove(em.find(Movie.class, 3L));
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }*/
-    }
 
-    @Disabled
     @Test
     public void testGetMovieById() {
         MovieDTO result = facade.getMovieById(1L);
         assertNotNull(result);
         assertEquals("My Little Whale", result.getName());
+    }
+    
+    @Test
+    public void testGetMovieByName() {
+        List<MovieDTO> result = facade.getMovieByName("MY Little Whale 2");
+        assertNotNull(result);
+        assertEquals(new MovieDTO(movies.get(1)), result.get(0));
     }
 
     @Test
@@ -115,28 +113,5 @@ public class MovieFacadeTest {
         assertNotNull(result);
         assertEquals(2, result.size());
     }
-/*
-    @Test
-    public void testRemoveMovie() {
-        EntityManager em = emf.createEntityManager();
-        Movie newMovie = new Movie(2020, "My Little Whale 3", new String[]{"John","Johnny"});
-        assertNotNull(newMovie);
-        
-        List<Movie> movies;
-        try {
-            em.getTransaction().begin();
-            em.persist(newMovie);
-            movies = em.createQuery("SELECT mov FROM Movie mov").getResultList();
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-        
-        facade.removeMovie(newMovie);
-        assertEquals("Hej", movies.get(0).getName());
-        
-        
-    }
-    */
-    
+
 }

@@ -1,10 +1,25 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Start Page</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-    <body>
-        <h1>Change or remove this page!</h1>
-    </body>
+
+<head>
+    <title>Start Page</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="Styles.css">
+    <script type="text/javascript" src="MovieJS.js"></script>
+</head>
+
+<body>
+
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Movie id or name" aria-label="MovieId" aria-describedby="basic-addon2">
+    <button class="btn btn-secondary" id="getMovieById">Get movie by id</button>
+    <button class="btn btn-secondary" id="getMovieByName">Get Movie by name</button>
+    <button class="btn btn-secondary" id="getCount">Get count</button>
+    <button class="btn btn-secondary" id="getAllMovies">Get all movies</button>
+    <button class="btn btn-secondary" id="createData">Insert more data to the database</button>
+    </div>
+</body>
+
 </html>
